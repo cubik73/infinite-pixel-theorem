@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Pixels</title>
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #controls {
+            display: flex;
+            justify-content: center;
+            padding: 10px;
+            background: #f0f0f0;
+        }
+
+        #controls input {
+            margin: 0 10px;
+        }
+
+        #canvas {
+            flex-grow: 1;
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="controls">
+        <label for="colors">Number of Colors:</label>
+        <input type="number" id="colors" value="256" min="1" max="256">
+        <label for="pixelWidth">Pixel Width:</label>
+        <input type="number" id="pixelWidth" value="1" min="1">
+        <label for="pixelHeight">Pixel Height:</label>
+        <input type="number" id="pixelHeight" value="1" min="1">
+        <button onclick="drawRandomPixels()">Refresh</button>
+        <button onclick="saveCanvasAsPNG()">Save as PNG</button>
+    </div>
+    <canvas id="canvas"></canvas>
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        const colorsInput = document.getElementById('colors');
+        const pixelWidthInput = document.getElementById('pixelWidth');
+        const pixelHeightInput = document.getElementById('pixelHeight');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            drawRandomPixels();
+        }
+
+        function getRandomColor(numColors) {
+            const colorStep = Math.floor(256 / numColors);
+            return Math.floor(Math.random() * numColors) * colorStep;
+        }
+
+        function drawRandomPixels() {
+            const width = canvas.width;
+            const height = canvas.height;
+            const numColors = parseInt(colorsInput.value);
+            const pixelWidth = parseInt(pixelWidthInput.value);
+            const pixelHeight = parseInt(pixelHeightInput.value);
+
+            for (let y = 0; y < height; y += pixelHeight) {
+                for (let x = 0; x < width; x += pixelWidth) {
+                    ctx.fillStyle = `rgb(${getRandomColor(numColors)}, ${getRandomColor(numColors)}, ${getRandomColor(numColors)})`;
+                    ctx.fillRect(x, y, pixelWidth, pixelHeight);
+                }
+            }
+        }
+
+        function saveCanvasAsPNG() {
+            const link = document.createElement('a');
+            link.download = 'random_pixels.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'r' || e.key === 'R') {
+                drawRandomPixels();
+            } else if (e.key === 'p' || e.key === 'P') {
+                saveCanvasAsPNG();
+            }
+        });
+
+        resizeCanvas();
+
+
+    </script>
+</body>
+
+</html>
